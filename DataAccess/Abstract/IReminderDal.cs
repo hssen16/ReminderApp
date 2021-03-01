@@ -6,7 +6,9 @@ using Entities.Concrete;
 
 namespace DataAccess.Abstract
 {
-    interface IReminderDal:IEntityRepository<Reminder>
+    public interface IReminderDal:IEntityRepository<Reminder>
     {
+        Reminder GetById(int id);
+        Reminder GetByCategoryId(int categoryId);
     }
 }
