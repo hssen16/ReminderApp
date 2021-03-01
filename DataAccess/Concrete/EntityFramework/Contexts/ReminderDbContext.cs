@@ -10,7 +10,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)MSSQLLocalDB;Database=ReminderDb;Trusted_Connection=true");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=ReminderDb;Trusted_Connection=true");
         }
 
         public DbSet<Reminder> Reminders { get; set; }

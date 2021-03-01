@@ -23,28 +23,28 @@ namespace Business.Concrete
         public IDataResult<List<Reminder>> GetAll(Expression<Func<Reminder, bool>> filter = null)
         {
             return filter == null
-                ? new SuccessDataResult<List<Reminder>>(_reminderDal.GetAll(), "Tüm hatırlatmalar listelendi")
-                : new SuccessDataResult<List<Reminder>>(_reminderDal.GetAll(filter), "Filtreye uyan tüm hatırlatmalar listelendi");
+                ? new SuccessDataResult<List<Reminder>>(_reminderDal.GetAll(), Messages.AllReminderListed)
+                : new SuccessDataResult<List<Reminder>>(_reminderDal.GetAll(filter), Messages.RemindersMatchingTheFilterListed);
         }
 
         public IDataResult<Reminder> Get(Expression<Func<Reminder, bool>> filter)
         {
-            return new SuccessDataResult<Reminder>(_reminderDal.Get(filter), "Filtreye uyan hatırlatma listelendi");
+            return new SuccessDataResult<Reminder>(_reminderDal.Get(filter), Messages.ReminderMatchingTheFilterListed);
         }
 
         public IDataResult<Reminder> GetById(int id)
         {
-            return new SuccessDataResult<Reminder>(_reminderDal.GetById(id), "Filtreye uyan hatırlatma listelendi");
+            return new SuccessDataResult<Reminder>(_reminderDal.GetById(id), Messages.ReminderMatchingTheFilterListed);
         }
 
         public IDataResult<Reminder> GetByCategoryId(int categoryId)
         {
-            return new SuccessDataResult<Reminder>(_reminderDal.GetByCategoryId(categoryId), "Filtreye uyan hatırlatma listelendi");
+            return new SuccessDataResult<Reminder>(_reminderDal.GetByCategoryId(categoryId), Messages.ReminderMatchingTheFilterListed);
         }
 
         public IResult Add(Reminder reminder)
         {
-            IResult result = BusinessRules.Run(CheckIfProductNameExists(reminder.Title));
+            IResult result = BusinessRules.Run(CheckIfReminderNameExists(reminder.Title));
 
             if (result != null)
             {
@@ -69,7 +69,7 @@ namespace Business.Concrete
         }
         
 
-        private IResult CheckIfProductNameExists(string title)
+        private IResult CheckIfReminderNameExists(string title)
         {
             var result = _reminderDal.GetAll(r =>r.Title  == title).Any();
             if (result)
