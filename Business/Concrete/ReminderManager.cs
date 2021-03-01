@@ -5,6 +5,11 @@ using System.Linq.Expressions;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
 using Entities.Concrete;
@@ -19,7 +24,8 @@ namespace Business.Concrete
         {
             _reminderDal = reminderDal;
         }
-
+       // [CacheAspect]
+       // [LogAspect(typeof(DatabaseLogger))]
         public IDataResult<List<Reminder>> GetAll(Expression<Func<Reminder, bool>> filter = null)
         {
             return filter == null
@@ -42,6 +48,8 @@ namespace Business.Concrete
             return new SuccessDataResult<Reminder>(_reminderDal.GetByCategoryId(categoryId), Messages.ReminderMatchingTheFilterListed);
         }
 
+        //[CacheRemoveAspect("IReminderService.Get")]
+        [ValidationAspect(typeof(ReminderValidator))]
         public IResult Add(Reminder reminder)
         {
             IResult result = BusinessRules.Run(CheckIfReminderNameExists(reminder.Title));
@@ -56,22 +64,26 @@ namespace Business.Concrete
             return new SuccessResult(Messages.ReminderAdded);
         }
 
+       // [LogAspect(typeof(FileLogger))]
+       // [CacheRemoveAspect("IReminderService.Get")]
+        [ValidationAspect(typeof(ReminderValidator))]
         public IResult Update(Reminder reminder)
         {
             _reminderDal.Update(reminder);
             return new SuccessResult(Messages.ReminderUpdated);
         }
 
+       // [CacheRemoveAspect("IReminderService.Get")]
         public IResult Delete(Reminder reminder)
         {
             _reminderDal.Delete(reminder);
             return new SuccessResult(Messages.ReminderDeleted);
         }
-        
+
 
         private IResult CheckIfReminderNameExists(string title)
         {
-            var result = _reminderDal.GetAll(r =>r.Title  == title).Any();
+            var result = _reminderDal.GetAll(r => r.Title == title).Any();
             if (result)
             {
                 return new ErrorResult(Messages.ReminderNameAlreadyExists);
@@ -79,7 +91,7 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        
+
 
     }
 }
